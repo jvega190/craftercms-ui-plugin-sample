@@ -1,4 +1,4 @@
-# Sample Component Library Plugin
+# Sample Tramslations override Plugin
 
 This example demonstrates how to create an extension that overrides translations in CrafterCMS
 

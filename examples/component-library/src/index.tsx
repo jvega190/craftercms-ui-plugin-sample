@@ -27,6 +27,6 @@ const plugin: PluginDescriptor = {
   ]
 };
 
-export { Translations as Vanilla };
+export { Translations };
 
 export default plugin;
