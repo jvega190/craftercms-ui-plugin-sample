@@ -1,5 +1,7 @@
 import en from './i18n/translations/en.json';
 import es from './i18n/translations/es.json';
+import de from './i18n/translations/de.json';
+import ko from './i18n/translations/ko.json';
 import { PluginDescriptor } from '@craftercms/studio-ui';
 import Translations from './components/Translations';
 
@@ -7,7 +9,9 @@ const plugin: PluginDescriptor = {
   id: 'org.craftercms.examples.componentLibrary',
   locales: {
     en,
-    es
+    es,
+    de,
+    ko
   },
   widgets: {
     'org.craftercms.examples.translations': Translations
