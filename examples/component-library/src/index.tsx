@@ -1,11 +1,7 @@
 import en from './i18n/translations/en.json';
 import es from './i18n/translations/es.json';
 import { PluginDescriptor } from '@craftercms/studio-ui';
-import ViewProjectsPanelButton from './components/ViewProjectsPanelButton';
-import Vanilla from './components/Vanilla';
-import ProjectsView from './components/ProjectsView';
-import PathExploringView from './components/PathExploringView';
-import ContentTypesView from './components/ContentTypesView';
+import Translations from './components/Translations';
 
 const plugin: PluginDescriptor = {
   id: 'org.craftercms.examples.componentLibrary',
@@ -14,11 +10,7 @@ const plugin: PluginDescriptor = {
     es
   },
   widgets: {
-    'org.craftercms.examples.vanilla': Vanilla,
-    'org.craftercms.examples.projectsView': ProjectsView,
-    'org.craftercms.examples.contentTypesView': ContentTypesView,
-    'org.craftercms.examples.pathExploringView': PathExploringView,
-    'org.craftercms.examples.viewProjectsPanelButton': ViewProjectsPanelButton
+    'org.craftercms.examples.translations': Translations
   },
   scripts: [
     // Below are examples of how to load scripts into the Studio runtime
@@ -35,6 +27,6 @@ const plugin: PluginDescriptor = {
   ]
 };
 
-export { Vanilla, ProjectsView, ContentTypesView, PathExploringView, ViewProjectsPanelButton };
+export { Translations as Vanilla };
 
 export default plugin;

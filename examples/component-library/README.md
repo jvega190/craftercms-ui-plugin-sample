@@ -1,8 +1,9 @@
 # Sample Component Library Plugin
 
-This example demonstrates how to create a CrafterCMS extension that exports various widgets that can be used across Studio UI.
+This example demonstrates how to create an extension that overrides translations in CrafterCMS
 
 Instructions:
+
 - Run `yarn` on the root
 - Run `yarn build` to re-build the plugin bundle once you've done modifications
 - Install the plugin from local sources using the CrafterCMS CLI, or using the `/studio/api/2/marketplace/copy` API in Postman or similar. Either way, you can use the following _JSON_ body:
@@ -14,21 +15,12 @@ Instructions:
 }
 ```
 
-The `viewProjectsPanelButton` & `vanilla` widgets are auto installed when using the `marketplace/copy` API. There are however other widgets in `src` directory you can use for inspiration.
-Reviewing your site's `ui.xml` you'll find the widgets below. Review the `installation` section of the `craftercms-plugin.yaml` to understand where those widgets come from.
+The `translations` widget is auto installed when using the `marketplace/copy` API.
+Reviewing your site's `ui.xml` you'll find the widget below. Review the `installation` section of the `craftercms-plugin.yaml` to understand where those widgets come from.
 
 ```xml
-<widget id="org.craftercms.examples.viewProjectsPanelButton">
-  <plugin id="org.craftercms"
-          type="examples"
-          name="library"
-          file="index.js"/>
-</widget>
-<widget id="org.craftercms.examples.vanilla">
-  <plugin id="org.craftercms"
-          type="examples"
-          name="library"
-          file="index.js"/>
+<widget id="org.craftercms.examples.translations">
+  <plugin id="org.craftercms" type="examples" name="library" file="index.js" />
 </widget>
 ```
 

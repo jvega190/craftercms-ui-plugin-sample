@@ -14,16 +14,16 @@ plugin:
     major: 1
     minor: 0
     patch: 0
-  description: Demonstrates 3 different strategies for building CrafterCMS authoring plugins
-  documentation: "https://raw.githubusercontent.com/craftercms/authoring-ui-plugin-examples/master/README.md"
+  description: Demonstrates a plugin that shows how to override translations in CrafterCMS
+  documentation: 'https://raw.githubusercontent.com/craftercms/authoring-ui-plugin-examples/master/README.md'
   website:
     name: Example Plugins
     url: https://github.com/craftercms/authoring-ui-plugin-examples
   media:
     screenshots:
-      - title: ChatGPT Plugin
-        description: CrafterCMS ChatGPT Plugin
-        url: "https://raw.githubusercontent.com/craftercms/chatgpt-plugin/main/.crafter/logo.png"
+      - title: Translations Plugin
+        description: CrafterCMS Translations Plugin
+        url: 'https://raw.githubusercontent.com/craftercms/chatgpt-plugin/main/.crafter/logo.png'
   developer:
     company:
       name: CrafterCMS
@@ -60,7 +60,7 @@ plugin:
   installation:
     - type: preview-app
       parentXpath: //widget[@id='craftercms.components.ToolsPanel']
-      elementXpath: //widget[@id='org.craftercms.examples.viewProjectsPanelButton']
+      elementXpath: //widget[@id='org.craftercms.examples.translations']
       element:
         name: configuration
         children:
@@ -69,30 +69,7 @@ plugin:
               - name: widget
                 attributes:
                   - name: id
-                    value: org.craftercms.examples.viewProjectsPanelButton
-                children:
-                  - name: plugin
-                    attributes:
-                      - name: id
-                        value: org.craftercms
-                      - name: type
-                        value: examples
-                      - name: name
-                        value: library
-                      - name: file
-                        value: index.js
-    - type: preview-app
-      parentXpath: //widget[@id='craftercms.components.ToolsPanel']
-      elementXpath: //widget[@id='org.craftercms.examples.vanilla']
-      element:
-        name: configuration
-        children:
-          - name: widgets
-            children:
-              - name: widget
-                attributes:
-                  - name: id
-                    value: org.craftercms.examples.vanilla
+                    value: org.craftercms.examples.translations
                 children:
                   - name: plugin
                     attributes:

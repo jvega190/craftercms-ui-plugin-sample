@@ -1,5 +1,3 @@
-// const babel = require('@rollup/plugin-babel');
-// const typescript = require('rollup-plugin-typescript2');
 const typescript = require('@rollup/plugin-typescript');
 const commonjs = require('@rollup/plugin-commonjs');
 const resolve = require('@rollup/plugin-node-resolve');
@@ -7,7 +5,6 @@ const replaceImportsWithVars = require('rollup-plugin-replace-imports-with-vars'
 const json = require('@rollup/plugin-json');
 const pkg = require('./package.json');
 const copy = require('rollup-plugin-copy');
-// const { terser } = require('rollup-plugin-terser');
 const replace = require('@rollup/plugin-replace');
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
@@ -52,7 +49,7 @@ module.exports = {
     replace({
       preventAssignment: true,
       'process.env.NODE_ENV': JSON.stringify('production'),
-      'import.meta.env.MODE': JSON.stringify('production'),
+      'import.meta.env.MODE': JSON.stringify('production')
     }),
     typescript({ tsconfig: './tsconfig.json', compilerOptions: { noEmit: false } }),
     replaceImportsWithVars({
@@ -66,10 +63,6 @@ module.exports = {
     copy({
       hook: 'closeBundle',
       targets: [
-        // {
-        //   src: './src/misc/{script,index}.{js,css}',
-        //   dest: './dist'
-        // }
         {
           src: './dist/index.js',
           dest: '../../authoring/static-assets/plugins/org/craftercms/examples/library'

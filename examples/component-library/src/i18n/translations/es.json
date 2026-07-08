@@ -1,8 +1,3 @@
 {
-  "org.craftercms.examples.sitesView.noContentTypesMessage": "No hay tipos de contenido",
-  "org.craftercms.examples.sitesView.numOfContentTypesMessage": "Hay {total, plural, one {un tipo de contenido} other {{total} tipos de contenido}}",
-  "org.craftercms.examples.sitesView.numOfProjectsMessage": "Hay {total, plural, one {un proyecto} other {{total} proyectos}}",
-  "org.craftercms.examples.vanilla.exampleTranslations": "Hola. Este text esta traducido.",
-  "org.craftercms.examples.vanilla.myProjects": "Mis Proyectos",
-  "org.craftercms.examples.vanilla.viewProjects": "Ver mis proyectos"
+  "w7YdZu": "Mi placeholder personalizado."
 }
