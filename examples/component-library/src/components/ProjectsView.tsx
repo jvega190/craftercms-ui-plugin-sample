@@ -19,14 +19,13 @@ export function ProjectsView(props: ProjectsViewProps) {
     <Box sx={{ p: 1 }}>
       <Grid container spacing={2}>
         {sites.map((site) => (
-          <Grid key={site.id} item>
+          <Grid key={site.id}>
             <SiteCard
               site={site}
               onSiteClick={() => undefined}
               onDeleteSiteClick={null}
               onEditSiteClick={null}
               onPublishButtonClick={null}
-              publishingStatus={false}
               onDuplicateSiteClick={null}
             />
           </Grid>
