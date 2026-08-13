@@ -111,8 +111,7 @@ function ApodControl(props) {
     var _a, _b, _c, _d, _e;
     var value = props.value, setValue = props.setValue, field = props.field, readonly = props.readonly, dataSources = props.dataSources;
     var id = "fe2-plugin-control-apod-".concat((_a = field === null || field === void 0 ? void 0 : field.id) !== null && _a !== void 0 ? _a : 'field');
-    // const [preview, setPreview] = useState<ApodInfo | null>(value);
-    var _f = useState(value), preview = _f[0], setPreview = _f[1]; // TODO: type
+    var _f = useState(value), preview = _f[0], setPreview = _f[1];
     var _g = useState(false), loading = _g[0], setLoading = _g[1];
     var _h = useState(null), error = _h[0], setError = _h[1];
     useEffect(function () {
@@ -155,7 +154,7 @@ function ApodControl(props) {
     }); }, [instance, setValue]);
     var clearValue = useCallback(function () {
         setPreview(null);
-        setValue('');
+        setValue(null);
         setError(null);
     }, [setValue]);
     var FormsEngineField = (_e = (_d = (_c = globalThis.craftercms) === null || _c === void 0 ? void 0 : _c.formsEngine) === null || _d === void 0 ? void 0 : _d.controls) === null || _e === void 0 ? void 0 : _e.FormsEngineField;

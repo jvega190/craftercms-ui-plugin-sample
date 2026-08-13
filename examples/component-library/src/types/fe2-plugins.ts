@@ -44,8 +44,8 @@ export interface Fe2ControlField {
 }
 
 export interface Fe2ControlProps {
-  value: unknown;
-  setValue: (next: any) => void; // TODO: type
+  value: ApodInfo;
+  setValue: (next: ApodInfo) => void;
   field: Fe2ControlField;
   readonly?: boolean;
   dataSources?: ControlDataSources;
@@ -60,8 +60,8 @@ export interface DataSourceBinding {
 export interface Fe2ControlDescriptor {
   Component: ComponentType<Fe2ControlProps>;
   dataSourceBindings?: DataSourceBinding[];
-  valueRetriever?: any; // TODO: type
-  valueSerializer?: any; // TODO: type
+  valueRetriever?: (value: unknown) => ApodInfo;
+  valueSerializer?: (field, value: ApodInfo) => string;
 }
 
 export interface DataSourceRecord {

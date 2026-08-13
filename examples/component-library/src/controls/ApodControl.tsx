@@ -46,8 +46,7 @@ export function ApodControl(props: Fe2ControlProps) {
   const { value, setValue, field, readonly, dataSources } = props;
   const id = `fe2-plugin-control-apod-${field?.id ?? 'field'}`;
 
-  // const [preview, setPreview] = useState<ApodInfo | null>(value);
-  const [preview, setPreview] = useState<any>(value); // TODO: type
+  const [preview, setPreview] = useState<ApodInfo | null>(value);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,7 +81,7 @@ export function ApodControl(props: Fe2ControlProps) {
 
   const clearValue = useCallback(() => {
     setPreview(null);
-    setValue('');
+    setValue(null);
     setError(null);
   }, [setValue]);
 
