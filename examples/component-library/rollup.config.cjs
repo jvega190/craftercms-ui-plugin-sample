@@ -5,10 +5,10 @@ const commonjs = require('@rollup/plugin-commonjs');
 const resolve = require('@rollup/plugin-node-resolve');
 const replaceImportsWithVars = require('rollup-plugin-replace-imports-with-vars');
 const json = require('@rollup/plugin-json');
-const pkg = require('./package.json');
 const copy = require('rollup-plugin-copy');
 // const { terser } = require('rollup-plugin-terser');
 const replace = require('@rollup/plugin-replace');
+const path = require('path');
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
@@ -36,45 +36,63 @@ const replacementRegExps = {
   '@mui/icons-material/(.+(Rounded|Outlined))$': (exec) => `craftercms.utils.constants.components.get('${exec[0]}')`
 };
 
-module.exports = {
-  context: 'this',
-  input: 'src/index.tsx',
-  output: [
-    {
-      file: pkg.main,
-      format: 'es',
-      globals
-    }
-  ],
-  external: Object.keys(globals).concat(Object.keys(replacementRegExps).map((str) => new RegExp(str))),
-  plugins: [
-    json(),
-    replace({
-      preventAssignment: true,
-      'process.env.NODE_ENV': JSON.stringify('production'),
-      'import.meta.env.MODE': JSON.stringify('production'),
-    }),
-    typescript({ tsconfig: './tsconfig.json', compilerOptions: { noEmit: false } }),
-    replaceImportsWithVars({
-      replacementLookup: globals,
-      replacementRegExps
-    }),
-    // !!: If used, terser should be after `replaceImportsWithVars`
-    // terser(),
-    resolve({ extensions }),
-    commonjs(),
-    copy({
-      hook: 'closeBundle',
-      targets: [
-        // {
-        //   src: './src/misc/{script,index}.{js,css}',
-        //   dest: './dist'
-        // }
-        {
-          src: './dist/index.js',
-          dest: '../../authoring/static-assets/plugins/org/craftercms/examples/library'
-        }
-      ]
-    })
-  ]
-};
+const authoringPluginsRoot = path.resolve(__dirname, '../../authoring/static-assets/plugins/org/craftercms/examples');
+
+function createConfig({ input, file, copyDest }) {
+  return {
+    context: 'this',
+    input,
+    output: [
+      {
+        file,
+        format: 'es',
+        globals
+      }
+    ],
+    external: Object.keys(globals).concat(Object.keys(replacementRegExps).map((str) => new RegExp(str))),
+    plugins: [
+      json(),
+      replace({
+        preventAssignment: true,
+        'process.env.NODE_ENV': JSON.stringify('production'),
+        'import.meta.env.MODE': JSON.stringify('production')
+      }),
+      typescript({ tsconfig: './tsconfig.json', compilerOptions: { noEmit: false } }),
+      replaceImportsWithVars({
+        replacementLookup: globals,
+        replacementRegExps
+      }),
+      // !!: If used, terser should be after `replaceImportsWithVars`
+      // terser(),
+      resolve({ extensions }),
+      commonjs(),
+      copy({
+        hook: 'closeBundle',
+        targets: [
+          {
+            src: file,
+            dest: copyDest
+          }
+        ]
+      })
+    ]
+  };
+}
+
+module.exports = [
+  createConfig({
+    input: 'src/index.tsx',
+    file: 'dist/index.js',
+    copyDest: path.join(authoringPluginsRoot, 'library')
+  }),
+  createConfig({
+    input: 'src/controls/apodControlPlugin.ts',
+    file: 'dist/control/apod/index.js',
+    copyDest: path.join(authoringPluginsRoot, 'control/apod')
+  }),
+  createConfig({
+    input: 'src/dataSources/apodImagePlugin.ts',
+    file: 'dist/datasource/apod-image/index.js',
+    copyDest: path.join(authoringPluginsRoot, 'datasource/apod-image')
+  })
+];

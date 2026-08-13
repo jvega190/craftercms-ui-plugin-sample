@@ -10,12 +10,17 @@ plugin:
   tags:
     - authoring
     - tools
+    - forms-engine
+    - form-control
+    - form-datasource
   version:
     major: 1
     minor: 0
     patch: 0
-  description: Demonstrates 3 different strategies for building CrafterCMS authoring plugins
-  documentation: "https://raw.githubusercontent.com/craftercms/authoring-ui-plugin-examples/master/README.md"
+  description: >
+    Demonstrates building CrafterCMS authoring plugins: Studio UI widgets,
+    an FE2 form control, and an FE2 data source (NASA APOD).
+  documentation: 'https://raw.githubusercontent.com/craftercms/authoring-ui-plugin-examples/master/README.md'
   website:
     name: Example Plugins
     url: https://github.com/craftercms/authoring-ui-plugin-examples
@@ -23,7 +28,7 @@ plugin:
     screenshots:
       - title: ChatGPT Plugin
         description: CrafterCMS ChatGPT Plugin
-        url: "https://raw.githubusercontent.com/craftercms/chatgpt-plugin/main/.crafter/logo.png"
+        url: 'https://raw.githubusercontent.com/craftercms/chatgpt-plugin/main/.crafter/logo.png'
   developer:
     company:
       name: CrafterCMS
@@ -54,6 +59,9 @@ plugin:
     - major: 4
       minor: 2
       patch: 2
+    - major: 5
+      minor: 0
+      patch: 0
   crafterCmsEditions:
     - community
     - enterprise
@@ -104,3 +112,156 @@ plugin:
                         value: library
                       - name: file
                         value: index.js
+    # Type Builder 2 catalog (ui.xml → ContentTypeManagement → controls)
+    - type: preview-app
+      parentXpath: //widget[@id='craftercms.components.ContentTypeManagement']/configuration/controls
+      elementXpath: //widget[@id='craftercms.components.ContentTypeManagement']//control[@id='apod']
+      element:
+        name: control
+        attributes:
+          - name: id
+            value: apod
+        children:
+          - name: icon
+            attributes:
+              - name: id
+                value: '@mui/icons-material/WbSunnyOutlined'
+          - name: plugin
+            attributes:
+              - name: id
+                value: org.craftercms.examples
+              - name: type
+                value: control
+              - name: name
+                value: apod
+              - name: fileName
+                value: index.js
+          - name: descriptor
+            children:
+              - name: id
+                value: apod
+              - name: name
+                value: NASA Astronomy Picture of the Day
+              - name: description
+                value: Displays Astronomy Picture of the Day from an apod-image data source
+              - name: sections
+                attributes:
+                  - name: title
+                    value: Options
+                  - name: id
+                    value: properties
+                  - name: expandByDefault
+                    value: 'true'
+                children:
+                  - name: fields
+                    value: datasource
+                  - name: fields
+                    value: readonly
+              - name: sections
+                attributes:
+                  - name: title
+                    value: Constraints
+                children:
+                  - name: fields
+                    value: required
+              - name: fields
+                children:
+                  - name: datasource
+                    children:
+                      - name: id
+                        value: datasource
+                      - name: type
+                        value: datasource:item:singleSelection
+                      - name: name
+                        value: Data Source
+                      - name: defaultValue
+                      - name: validations
+                        children:
+                          - name: type
+                            children:
+                              - name: id
+                                value: type
+                              - name: value
+                                value: apod-image
+                              - name: level
+                                value: required
+                  - name: readonly
+                    children:
+                      - name: id
+                        value: readonly
+                      - name: type
+                        value: boolean
+                      - name: name
+                        value: Read Only
+                      - name: defaultValue
+                        value: 'false'
+                  - name: required
+                    children:
+                      - name: id
+                        value: required
+                      - name: type
+                        value: boolean
+                      - name: name
+                        value: Required
+                      - name: defaultValue
+                        value: 'false'
+              - name: metadata
+                children:
+                  - name: suffixes
+                    value: _s
+    # Type Builder 2 catalog (ui.xml → ContentTypeManagement → dataSources)
+    - type: preview-app
+      parentXpath: //widget[@id='craftercms.components.ContentTypeManagement']/configuration/dataSources
+      elementXpath: //widget[@id='craftercms.components.ContentTypeManagement']//dataSource[@id='apod-image']
+      element:
+        name: dataSource
+        attributes:
+          - name: id
+            value: apod-image
+        children:
+          - name: icon
+            attributes:
+              - name: id
+                value: '@mui/icons-material/WbSunnyOutlined'
+          - name: plugin
+            attributes:
+              - name: id
+                value: org.craftercms.examples
+              - name: type
+                value: datasource
+              - name: name
+                value: apod-image
+              - name: fileName
+                value: index.js
+          - name: descriptor
+            children:
+              - name: id
+                value: apod-image
+              - name: name
+                value: NASA Astronomy Picture of the Day Image
+              - name: description
+                value: Fetches Astronomy Picture of the Day from api.nasa.gov
+              # Persisted on the DS record as <interface>; APOD control filters on this value
+              - name: type
+                value: apod-image
+              - name: sections
+                attributes:
+                  - name: title
+                    value: Options
+                children:
+                  - name: fields
+                    value: apiKey
+              - name: fields
+                children:
+                  - name: apiKey
+                    children:
+                      - name: id
+                        value: apiKey
+                      - name: type
+                        value: string
+                      - name: name
+                        value: NASA API Key
+                      - name: defaultValue
+                        value: DEMO_KEY
+                      - name: helpText
+                        value: Get a free key at https://api.nasa.gov (DEMO_KEY is rate-limited)

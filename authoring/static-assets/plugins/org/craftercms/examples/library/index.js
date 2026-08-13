@@ -134,7 +134,7 @@ function ProjectsView(props) {
     if (!sites) {
         return jsx(LoadingState, {});
     }
-    return (jsxs(Box, { sx: { p: 1 }, children: [jsx(Grid, { container: true, spacing: 2, children: sites.map(function (site) { return (jsx(Grid, { item: true, children: jsx(SiteCard, { site: site, onSiteClick: function () { return undefined; }, onDeleteSiteClick: null, onEditSiteClick: null, onPublishButtonClick: null, publishingStatus: false, onDuplicateSiteClick: null }) }, site.id)); }) }), jsx(Typography, { variant: "body2", textAlign: "center", children: jsx(FormattedMessage, { id: "org.craftercms.examples.sitesView.numOfProjectsMessage", defaultMessage: "You have {total, plural, one {one project} other {{total} projects}}", values: { total: sites.total } }) })] }));
+    return (jsxs(Box, { sx: { p: 1 }, children: [jsx(Grid, { container: true, spacing: 2, children: sites.map(function (site) { return (jsx(Grid, { children: jsx(SiteCard, { site: site, onSiteClick: function () { return undefined; }, onDeleteSiteClick: null, onEditSiteClick: null, onPublishButtonClick: null, onDuplicateSiteClick: null }) }, site.id)); }) }), jsx(Typography, { variant: "body2", textAlign: "center", children: jsx(FormattedMessage, { id: "org.craftercms.examples.sitesView.numOfProjectsMessage", defaultMessage: "You have {total, plural, one {one project} other {{total} projects}}", values: { total: sites.total } }) })] }));
 }
 
 function PathExploringView(props) {
@@ -202,7 +202,6 @@ const contentTypeDropTargetsResponse = /*#__PURE__*/ createAction('CONTENT_TYPE_
 const FETCH_CONTENT_TYPES = 'FETCH_CONTENT_TYPES';
 const fetchContentTypes = /*#__PURE__*/ createAction(FETCH_CONTENT_TYPES);
 /*#__PURE__*/ createAction(contentTypeDropTargetsResponse.type);
-// endregion
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
