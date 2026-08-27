@@ -92,11 +92,11 @@ function findApodInstance(dataSources) {
     }
     return null;
 }
-function retrieveFromInstance(instance) {
+function retrieveFromInstance(instance, context) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             if (typeof instance.list === 'function') {
-                return [2 /*return*/, instance.list()];
+                return [2 /*return*/, instance.list(context)];
             }
             throw new Error('Bound data source does not expose list() method.');
         });
@@ -121,9 +121,10 @@ function ApodControl(props) {
     var dsStatus = (_b = dataSources === null || dataSources === void 0 ? void 0 : dataSources.status) !== null && _b !== void 0 ? _b : 'idle';
     var dsReady = dsStatus === 'ready' || dsStatus === 'idle';
     var fetchApod = useCallback(function () { return __awaiter(_this, void 0, void 0, function () {
-        var apod, err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var resource, apod, err_1;
+        var _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
                     if (!instance) {
                         setError('No apod-image data source is bound to this field. Update the content type definition to add options to this control.');
@@ -131,17 +132,19 @@ function ApodControl(props) {
                     }
                     setLoading(true);
                     setError(null);
-                    _a.label = 1;
+                    _c.label = 1;
                 case 1:
-                    _a.trys.push([1, 3, 4, 5]);
-                    return [4 /*yield*/, retrieveFromInstance(instance)];
+                    _c.trys.push([1, 3, 4, 5]);
+                    return [4 /*yield*/, retrieveFromInstance(instance, (_a = dataSources === null || dataSources === void 0 ? void 0 : dataSources.context) !== null && _a !== void 0 ? _a : null)];
                 case 2:
-                    apod = _a.sent();
+                    resource = _c.sent();
+                    apod = (_b = resource === null || resource === void 0 ? void 0 : resource[0]) === null || _b === void 0 ? void 0 : _b.apod;
+                    console.log('apod', apod);
                     setPreview(apod);
                     setValue(apod);
                     return [3 /*break*/, 5];
                 case 3:
-                    err_1 = _a.sent();
+                    err_1 = _c.sent();
                     console.error('APOD fetch failed.', err_1);
                     setError(err_1 instanceof Error ? err_1.message : String(err_1));
                     return [3 /*break*/, 5];
@@ -151,7 +154,7 @@ function ApodControl(props) {
                 case 5: return [2 /*return*/];
             }
         });
-    }); }, [instance, setValue]);
+    }); }, [instance, setValue, dataSources === null || dataSources === void 0 ? void 0 : dataSources.context]);
     var clearValue = useCallback(function () {
         setPreview(null);
         setValue(null);
@@ -208,8 +211,9 @@ var plugin = {
                     return { url: text, title: text, date: '', explanation: '' };
                 }
             },
-            valueSerializer: function (field, apod) {
+            valueSerializer: function (_field, value) {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
+                var apod = value;
                 if (!apod || typeof apod !== 'object')
                     return '';
                 return JSON.stringify({

@@ -58,7 +58,6 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
     return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
 };
 
-var DATA_SOURCE_API_VERSION = 1;
 var APOD_ENDPOINT = 'https://api.nasa.gov/planetary/apod';
 var DEFAULT_API_KEY = 'DEMO_KEY';
 function readApiKey(record) {
@@ -104,7 +103,7 @@ function fetchApod(apiKey_1) {
     });
 }
 var apodImageDataSourceModule = {
-    apiVersion: DATA_SOURCE_API_VERSION,
+    apiVersion: 1,
     type: 'apod-image',
     interfaces: ['apod-image'],
     capabilities: ['list'],
@@ -127,10 +126,13 @@ var apodImageDataSourceModule = {
             getActions: function () { return []; },
             list: function () {
                 return __awaiter(this, void 0, void 0, function () {
+                    var apod;
                     return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0: return [4 /*yield*/, getApod()];
-                            case 1: return [2 /*return*/, _a.sent()];
+                            case 1:
+                                apod = _a.sent();
+                                return [2 /*return*/, [{ key: apod.url, value: apod.title, apod: apod }]];
                         }
                     });
                 });

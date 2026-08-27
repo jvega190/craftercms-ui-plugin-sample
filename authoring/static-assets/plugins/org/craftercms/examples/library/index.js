@@ -160,7 +160,7 @@ function PathExploringView(props) {
  */
 
 function useActiveSiteId() {
-  return useSelector((state) => state.sites.active);
+	return useSelector((state) => state.sites.active);
 }
 
 /*
@@ -180,7 +180,7 @@ function useActiveSiteId() {
  */
 
 const useSelection =
-  useSelector ;
+	useSelector ;
 
 /*
  * Copyright (C) 2007-2022 Crafter Software Corporation. All Rights Reserved.
@@ -220,15 +220,15 @@ const fetchContentTypes = /*#__PURE__*/ createAction(FETCH_CONTENT_TYPES);
  */
 
 function useContentTypes() {
-  const dispatch = useDispatch();
-  const site = useActiveSiteId();
-  const { byId, isFetching } = useSelection((state) => state.contentTypes);
-  useEffect(() => {
-    if (!byId && site && isFetching === null) {
-      dispatch(fetchContentTypes());
-    }
-  }, [dispatch, site, byId, isFetching]);
-  return byId;
+	const dispatch = useDispatch();
+	const site = useActiveSiteId();
+	const { byId, isFetching } = useSelection((state) => state.contentTypes);
+	useEffect(() => {
+		if (!byId && site && isFetching === null) {
+			dispatch(fetchContentTypes());
+		}
+	}, [dispatch, site, byId, isFetching]);
+	return byId;
 }
 
 /*
@@ -248,21 +248,21 @@ function useContentTypes() {
  */
 
 function useContentTypeList(filterFn = null) {
-  const byId = useContentTypes();
-  return useMemo(
-    () => {
-      if (!byId) {
-        return null;
-      } else {
-        const list = Object.values(byId);
-        return Boolean(filterFn) ? list.filter(filterFn) : list;
-      }
-    },
-    // Filter omitted purposely to facilitate use without need
-    // to memoize filterFn on the consumer side
-    // eslint-disable-next-line
-    [byId]
-  );
+	const byId = useContentTypes();
+	return useMemo(
+		() => {
+			if (!byId) {
+				return null;
+			} else {
+				const list = Object.values(byId);
+				return Boolean(filterFn) ? list.filter(filterFn) : list;
+			}
+		},
+		// Filter omitted purposely to facilitate use without need
+		// to memoize filterFn on the consumer side
+		// eslint-disable-next-line
+		[byId]
+	);
 }
 
 function ContentTypesView(props) {
