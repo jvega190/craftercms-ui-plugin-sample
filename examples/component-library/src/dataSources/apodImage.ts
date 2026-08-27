@@ -1,10 +1,10 @@
-import type { ApodDataSourceInstance, ApodInfo, DataSourceModule, DataSourceRecord } from '../types/fe2-plugins';
+import type { ApodInfo } from '../types/fe2-plugins';
+import type { DataSource, DataSourceInstance, DataSourceModule } from '@craftercms/studio-ui';
 
-const DATA_SOURCE_API_VERSION = 1;
 const APOD_ENDPOINT = 'https://api.nasa.gov/planetary/apod';
 const DEFAULT_API_KEY = 'DEMO_KEY';
 
-function readApiKey(record: DataSourceRecord): string {
+function readApiKey(record: DataSource): string {
   const raw = record?.properties?.apiKey;
   if (raw == null || String(raw).trim() === '') return DEFAULT_API_KEY;
   return String(raw).trim();
@@ -32,11 +32,11 @@ async function fetchApod(apiKey: string, options: { date?: string } = {}): Promi
 }
 
 export const apodImageDataSourceModule: DataSourceModule = {
-  apiVersion: DATA_SOURCE_API_VERSION,
+  apiVersion: 1,
   type: 'apod-image',
   interfaces: ['apod-image'],
   capabilities: ['list'],
-  create({ record }): ApodDataSourceInstance {
+  create({ record }): DataSourceInstance {
     const apiKey = readApiKey(record);
 
     async function getApod(options?: { date?: string }) {
@@ -51,7 +51,8 @@ export const apodImageDataSourceModule: DataSourceModule = {
       capabilities: ['list'],
       getActions: () => [],
       async list() {
-        return await getApod();
+        const apod = await getApod();
+        return [{ key: apod.url, value: apod.title, apod }];
       }
     };
   }

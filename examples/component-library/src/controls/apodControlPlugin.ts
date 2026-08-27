@@ -1,5 +1,8 @@
-import type { ApodInfo, Fe2PluginDescriptor } from '../types/fe2-plugins';
+import { ComponentType } from 'react';
+import type { ApodInfo } from '../types/fe2-plugins';
 import ApodControl from './ApodControl';
+import type { PluginDescriptor } from '@craftercms/studio-ui';
+import { ControlProps } from '@craftercms/studio-ui/components/FormsEngine/types';
 
 /**
  * FE2 control plugin — NASA Astronomy Picture of the Day (APOD).
@@ -7,13 +10,13 @@ import ApodControl from './ApodControl';
  * Locator (form-definition): pluginId=org.craftercms.examples type=control name=apod filename=index.js
  * Asset path: /static-assets/plugins/org/craftercms/examples/control/apod/index.js
  */
-const plugin: Fe2PluginDescriptor = {
+const plugin: PluginDescriptor = {
   /** Runtime registry identity — not the same as form-definition locator `pluginId`. */
   id: 'org.craftercms.examples.control',
   controls: {
     /** Key must equal field.type */
     apod: {
-      Component: ApodControl,
+      Component: ApodControl as ComponentType<ControlProps>,
       dataSourceBindings: [{ propertyName: 'datasource', interfaces: ['apod-image'], selection: 'single' }],
       valueRetriever: (value) => {
         if (value == null || value === '') return null;
@@ -27,7 +30,8 @@ const plugin: Fe2PluginDescriptor = {
           return { url: text, title: text, date: '', explanation: '' };
         }
       },
-      valueSerializer: (field, apod: ApodInfo | null | undefined) => {
+      valueSerializer: (_field, value) => {
+        const apod = value as ApodInfo | null | undefined;
         if (!apod || typeof apod !== 'object') return '';
         return JSON.stringify({
           date: apod.date ?? '',

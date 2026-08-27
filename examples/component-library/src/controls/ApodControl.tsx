@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import type { ApodDataSourceInstance, ApodInfo, ControlDataSources, Fe2ControlProps } from '../types/fe2-plugins';
+import type { ApodInfo } from '../types/fe2-plugins';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
@@ -17,8 +17,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
+import type { ControlProps } from '@craftercms/studio-ui/components/FormsEngine/types';
+import type { DataSourceFieldContext, DataSourceInstance, ResolvedDataSources } from '@craftercms/studio-ui';
 
-function findApodInstance(dataSources?: ControlDataSources): ApodDataSourceInstance | null {
+function findApodInstance(dataSources?: ResolvedDataSources): DataSourceInstance | null {
   const instances = dataSources?.instances ?? [];
   for (const resolved of instances) {
     const instance = resolved?.instance;
@@ -31,18 +33,42 @@ function findApodInstance(dataSources?: ControlDataSources): ApodDataSourceInsta
   return null;
 }
 
-async function retrieveFromInstance(instance: ApodDataSourceInstance): Promise<ApodInfo> {
+
+async function retrieveFromInstance(instance: DataSourceInstance, context: DataSourceFieldContext | null): Promise<ApodInfo> {
   if (typeof instance.list === 'function') {
-    return instance.list();
+    return instance.list(context) as unknown as Promise<ApodInfo>;
   }
   throw new Error('Bound data source does not expose list() method.');
+}
+
+// async function retrieveFromInstance(
+//   instance: DataSourceInstance,
+//   context: DataSourceFieldContext | null
+// ): Promise<ApodInfo> {
+//   if (typeof instance.list !== 'function') {
+//     throw new Error('Bound data source does not expose list() method.');
+//   }
+//   if (!context) {
+//     throw new Error('Data source field context is not ready.');
+//   }
+//   const result = await instance.list(context);
+//   const first = Array.isArray(result) ? result[0] : result;
+//   const apod = first as unknown as ApodInfo;
+//   if (!apod) {
+//     throw new Error('Bound data source did not return an APOD payload.');
+//   }
+//   return apod;
+// }
+
+export interface ApodControlProps extends ControlProps {
+  value: ApodInfo;
 }
 
 /**
  * FE2 control: asks the bound apod-image DS for today's picture and displays it.
  * Field value is a JSON string of the APOD payload (empty when unset).
  */
-export function ApodControl(props: Fe2ControlProps) {
+export function ApodControl(props: ApodControlProps) {
   const { value, setValue, field, readonly, dataSources } = props;
   const id = `fe2-plugin-control-apod-${field?.id ?? 'field'}`;
 
@@ -68,7 +94,8 @@ export function ApodControl(props: Fe2ControlProps) {
     setLoading(true);
     setError(null);
     try {
-      const apod = await retrieveFromInstance(instance);
+      const resource = await retrieveFromInstance(instance, dataSources?.context ?? null);
+      const apod = resource?.[0]?.apod;
       setPreview(apod);
       setValue(apod);
     } catch (err) {
@@ -77,7 +104,7 @@ export function ApodControl(props: Fe2ControlProps) {
     } finally {
       setLoading(false);
     }
-  }, [instance, setValue]);
+  }, [instance, setValue, dataSources?.context]);
 
   const clearValue = useCallback(() => {
     setPreview(null);

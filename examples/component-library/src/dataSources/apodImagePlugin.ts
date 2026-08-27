@@ -1,4 +1,4 @@
-import type { Fe2PluginDescriptor } from '../types/fe2-plugins';
+import type { PluginDescriptor } from '@craftercms/studio-ui';
 import { apodImageDataSourceModule } from './apodImage';
 
 /**
@@ -7,7 +7,7 @@ import { apodImageDataSourceModule } from './apodImage';
  * Locator (form-definition): pluginId=org.craftercms.examples type=datasource name=apod-image filename=index.js
  * Asset path: /static-assets/plugins/org/craftercms/examples/datasource/apod-image/index.js
  */
-const plugin: Fe2PluginDescriptor = {
+const plugin: PluginDescriptor = {
   /** Runtime registry identity — not the same as form-definition locator `pluginId`. */
   id: 'org.craftercms.examples.datasource',
   dataSources: {
