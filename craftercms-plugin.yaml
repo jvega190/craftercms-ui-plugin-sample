@@ -240,7 +240,7 @@ plugin:
               - name: name
                 value: NASA Astronomy Picture of the Day Image
               - name: description
-                value: Fetches Astronomy Picture of the Day from api.nasa.gov
+                value: Fetches Astronomy Picture of the Day from science.nasa.gov
               # Persisted on the DS record as <interface>; APOD control filters on this value
               - name: type
                 value: apod-image

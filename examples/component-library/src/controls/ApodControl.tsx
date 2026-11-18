@@ -19,6 +19,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import type { ControlProps } from '@craftercms/studio-ui/components/FormsEngine/types';
 import type { DataSourceFieldContext, DataSourceInstance, ResolvedDataSources } from '@craftercms/studio-ui';
+import { MenuList } from '@mui/material';
 
 function findApodInstance(dataSources?: ResolvedDataSources): DataSourceInstance | null {
   const instances = dataSources?.instances ?? [];
@@ -40,25 +41,6 @@ async function retrieveFromInstance(instance: DataSourceInstance, context: DataS
   }
   throw new Error('Bound data source does not expose list() method.');
 }
-
-// async function retrieveFromInstance(
-//   instance: DataSourceInstance,
-//   context: DataSourceFieldContext | null
-// ): Promise<ApodInfo> {
-//   if (typeof instance.list !== 'function') {
-//     throw new Error('Bound data source does not expose list() method.');
-//   }
-//   if (!context) {
-//     throw new Error('Data source field context is not ready.');
-//   }
-//   const result = await instance.list(context);
-//   const first = Array.isArray(result) ? result[0] : result;
-//   const apod = first as unknown as ApodInfo;
-//   if (!apod) {
-//     throw new Error('Bound data source did not return an APOD payload.');
-//   }
-//   return apod;
-// }
 
 export interface ApodControlProps extends ControlProps {
   value: ApodInfo;
@@ -117,35 +99,36 @@ export function ApodControl(props: ApodControlProps) {
     return null;
   }
 
-  const mediaUrl = preview?.url || preview?.hdurl;
+  // WordPress APOD: `url` is the article page; the image file is `hdurl`.
+  const mediaUrl = preview?.hdurl || preview?.url;
 
   return (
-    <FormsEngineField field={field} htmlFor={id}>
-      <Stack spacing={1.5} id={id}>
-        {!instance && dsReady && (
-          <Alert severity="warning">
-            Bind an Astronomy Picture of the Day data source (interface apod-image) on this field to fetch the picture
-            of the day.
-          </Alert>
-        )}
-        {error && (
-          <Alert severity="error" onClose={() => setError(null)}>
-            {error}
-          </Alert>
-        )}
-        {!preview && (
-          <Box
-            sx={{
-              p: 1,
-              gap: 1,
-              py: 0.5,
-              display: 'flex',
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              color: 'primary.main',
-              justifyContent: 'center'
-            }}
-          >
+    <Stack spacing={1.5} id={id}>
+      {!instance && dsReady && (
+        <Alert severity="warning">
+          Bind an Astronomy Picture of the Day data source (interface apod-image) on this field to fetch the picture
+          of the day.
+        </Alert>
+      )}
+      {error && (
+        <Alert severity="error" onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+      {!preview && (
+        <Box
+          sx={{
+            p: 1,
+            gap: 1,
+            py: 0.5,
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            color: 'primary.main',
+            justifyContent: 'center'
+          }}
+        >
+          <MenuList>
             <MenuItem
               component={Button}
               variant="text"
@@ -161,71 +144,71 @@ export function ApodControl(props: ApodControlProps) {
                 <Typography>Fetch Astronomy Picture of the Day</Typography>
               </ListItemText>
             </MenuItem>
-          </Box>
-        )}
-        {preview && (
-          <Card sx={{ display: 'flex' }}>
-            {mediaUrl && (
-              <CardMedia
-                component="img"
-                sx={{ width: '40%' }}
-                image={mediaUrl}
-                alt={preview.title || 'Astronomy Picture of the Day'}
-              />
-            )}
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <CardContent sx={{ flex: '1 0 auto' }}>
-                <Typography component="div" variant="body1" marginBottom={1}>
-                  {preview.title || 'Astronomy Picture of the Day'}
+          </MenuList>
+        </Box>
+      )}
+      {preview && (
+        <Card sx={{ display: 'flex' }}>
+          {mediaUrl && (
+            <CardMedia
+              component="img"
+              sx={{ width: '40%' }}
+              image={mediaUrl}
+              alt={preview.title || 'Astronomy Picture of the Day'}
+            />
+          )}
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <CardContent sx={{ flex: '1 0 auto' }}>
+              <Typography component="div" variant="body1" marginBottom={1}>
+                {preview.title || 'Astronomy Picture of the Day'}
+              </Typography>
+              {preview.date && (
+                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
+                  {preview.date}
+                  {preview.copyright ? ` · © ${preview.copyright}` : ''}
                 </Typography>
-                {preview.date && (
-                  <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                    {preview.date}
-                    {preview.copyright ? ` · © ${preview.copyright}` : ''}
-                  </Typography>
-                )}
-                {preview.explanation && (
-                  <Typography variant="body2" color="text.secondary">
-                    {preview.explanation}
-                  </Typography>
-                )}
+              )}
+              {preview.explanation && (
+                <Typography variant="body2" color="text.secondary">
+                  {preview.explanation}
+                </Typography>
+              )}
 
-                <Box sx={{ mt: 1 }}>
-                  {preview && !readonly && (
-                    <Tooltip title="Refresh Astronomy Picture of the Day">
-                      <IconButton size="small" onClick={fetchApod} disabled={Boolean(readonly) || loading || !instance}>
-                        <CachedOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {preview.hdurl && (
-                    <Tooltip title="HD image">
-                      <IconButton
-                        size="small"
-                        onClick={() => {
-                          if (preview.hdurl) {
-                            window.open(preview.hdurl, '_blank');
-                          }
-                        }}
-                      >
-                        <VisibilityOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {preview && !readonly && (
-                    <Tooltip title="Clear">
-                      <IconButton size="small" onClick={clearValue} disabled={readonly}>
-                        <DeleteOutlineOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                </Box>
-              </CardContent>
-            </Box>
-          </Card>
-        )}
-      </Stack>
-    </FormsEngineField>
+              <Box sx={{ mt: 1 }}>
+                {preview && !readonly && (
+                  <Tooltip title="Refresh Astronomy Picture of the Day">
+                    <IconButton size="small" onClick={fetchApod} disabled={Boolean(readonly) || loading || !instance}>
+                      <CachedOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {preview.hdurl && (
+                  <Tooltip title="HD image">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        if (preview.hdurl) {
+                          window.open(preview.hdurl, '_blank');
+                        }
+                      }}
+                    >
+                      <VisibilityOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {preview && !readonly && (
+                  <Tooltip title="Clear">
+                    <IconButton size="small" onClick={clearValue} disabled={readonly}>
+                      <DeleteOutlineOutlinedIcon />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Box>
+            </CardContent>
+          </Box>
+        </Card>
+      )}
+    </Stack>
   );
 }
 

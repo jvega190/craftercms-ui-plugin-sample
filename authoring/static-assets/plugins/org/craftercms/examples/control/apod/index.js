@@ -1,4 +1,4 @@
-const { jsx, jsxs } = craftercms.libs?.reactJsxRuntime;
+const { jsxs, jsx } = craftercms.libs?.reactJsxRuntime;
 const { useState, useEffect, useMemo, useCallback } = craftercms.libs.React;
 const Alert = craftercms.libs.MaterialUI.Alert && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.Alert, 'default') ? craftercms.libs.MaterialUI.Alert['default'] : craftercms.libs.MaterialUI.Alert;
 const Box = craftercms.libs.MaterialUI.Box && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.Box, 'default') ? craftercms.libs.MaterialUI.Box['default'] : craftercms.libs.MaterialUI.Box;
@@ -16,6 +16,7 @@ const ListItemIcon = craftercms.libs.MaterialUI.ListItemIcon && Object.prototype
 const MenuItem = craftercms.libs.MaterialUI.MenuItem && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.MenuItem, 'default') ? craftercms.libs.MaterialUI.MenuItem['default'] : craftercms.libs.MaterialUI.MenuItem;
 const ListItemText = craftercms.libs.MaterialUI.ListItemText && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.ListItemText, 'default') ? craftercms.libs.MaterialUI.ListItemText['default'] : craftercms.libs.MaterialUI.ListItemText;
 const Button = craftercms.libs.MaterialUI.Button && Object.prototype.hasOwnProperty.call(craftercms.libs.MaterialUI.Button, 'default') ? craftercms.libs.MaterialUI.Button['default'] : craftercms.libs.MaterialUI.Button;
+const { MenuList } = craftercms.libs.MaterialUI;
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -115,6 +116,7 @@ function ApodControl(props) {
     var _g = useState(false), loading = _g[0], setLoading = _g[1];
     var _h = useState(null), error = _h[0], setError = _h[1];
     useEffect(function () {
+        console.log('value', value);
         setPreview(value);
     }, [value]);
     var instance = useMemo(function () { return findApodInstance(dataSources); }, [dataSources]);
@@ -139,8 +141,8 @@ function ApodControl(props) {
                 case 2:
                     resource = _c.sent();
                     apod = (_b = resource === null || resource === void 0 ? void 0 : resource[0]) === null || _b === void 0 ? void 0 : _b.apod;
-                    console.log('apod', apod);
                     setPreview(apod);
+                    console.log('apod', apod);
                     setValue(apod);
                     return [3 /*break*/, 5];
                 case 3:
@@ -164,21 +166,22 @@ function ApodControl(props) {
     if (!FormsEngineField) {
         return null;
     }
-    var mediaUrl = (preview === null || preview === void 0 ? void 0 : preview.url) || (preview === null || preview === void 0 ? void 0 : preview.hdurl);
-    return (jsx(FormsEngineField, { field: field, htmlFor: id, children: jsxs(Stack, { spacing: 1.5, id: id, children: [!instance && dsReady && (jsx(Alert, { severity: "warning", children: "Bind an Astronomy Picture of the Day data source (interface apod-image) on this field to fetch the picture of the day." })), error && (jsx(Alert, { severity: "error", onClose: function () { return setError(null); }, children: error })), !preview && (jsx(Box, { sx: {
-                        p: 1,
-                        gap: 1,
-                        py: 0.5,
-                        display: 'flex',
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
-                        color: 'primary.main',
-                        justifyContent: 'center'
-                    }, children: jsxs(MenuItem, { component: Button, variant: "text", loading: loading, onClick: fetchApod, disabled: Boolean(readonly) || loading || !instance, sx: { flexDirection: 'column', justifyContent: 'center' }, children: [jsx(ListItemIcon, { sx: { mr: 0, color: 'inherit' }, children: jsx(CachedOutlinedIcon, {}) }), jsx(ListItemText, { children: jsx(Typography, { children: "Fetch Astronomy Picture of the Day" }) })] }) })), preview && (jsxs(Card, { sx: { display: 'flex' }, children: [mediaUrl && (jsx(CardMedia, { component: "img", sx: { width: '40%' }, image: mediaUrl, alt: preview.title || 'Astronomy Picture of the Day' })), jsx(Box, { sx: { display: 'flex', flexDirection: 'column' }, children: jsxs(CardContent, { sx: { flex: '1 0 auto' }, children: [jsx(Typography, { component: "div", variant: "body1", marginBottom: 1, children: preview.title || 'Astronomy Picture of the Day' }), preview.date && (jsxs(Typography, { variant: "caption", color: "text.secondary", display: "block", gutterBottom: true, children: [preview.date, preview.copyright ? " \u00B7 \u00A9 ".concat(preview.copyright) : ''] })), preview.explanation && (jsx(Typography, { variant: "body2", color: "text.secondary", children: preview.explanation })), jsxs(Box, { sx: { mt: 1 }, children: [preview && !readonly && (jsx(Tooltip, { title: "Refresh Astronomy Picture of the Day", children: jsx(IconButton, { size: "small", onClick: fetchApod, disabled: Boolean(readonly) || loading || !instance, children: jsx(CachedOutlinedIcon, {}) }) })), preview.hdurl && (jsx(Tooltip, { title: "HD image", children: jsx(IconButton, { size: "small", onClick: function () {
-                                                        if (preview.hdurl) {
-                                                            window.open(preview.hdurl, '_blank');
-                                                        }
-                                                    }, children: jsx(VisibilityOutlinedIcon, {}) }) })), preview && !readonly && (jsx(Tooltip, { title: "Clear", children: jsx(IconButton, { size: "small", onClick: clearValue, disabled: readonly, children: jsx(DeleteOutlineOutlinedIcon, {}) }) }))] })] }) })] }))] }) }));
+    // WordPress APOD: `url` is the article page; the image file is `hdurl`.
+    var mediaUrl = (preview === null || preview === void 0 ? void 0 : preview.hdurl) || (preview === null || preview === void 0 ? void 0 : preview.url);
+    return (jsxs(Stack, { spacing: 1.5, id: id, children: [!instance && dsReady && (jsx(Alert, { severity: "warning", children: "Bind an Astronomy Picture of the Day data source (interface apod-image) on this field to fetch the picture of the day." })), error && (jsx(Alert, { severity: "error", onClose: function () { return setError(null); }, children: error })), !preview && (jsx(Box, { sx: {
+                    p: 1,
+                    gap: 1,
+                    py: 0.5,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    color: 'primary.main',
+                    justifyContent: 'center'
+                }, children: jsx(MenuList, { children: jsxs(MenuItem, { component: Button, variant: "text", loading: loading, onClick: fetchApod, disabled: Boolean(readonly) || loading || !instance, sx: { flexDirection: 'column', justifyContent: 'center' }, children: [jsx(ListItemIcon, { sx: { mr: 0, color: 'inherit' }, children: jsx(CachedOutlinedIcon, {}) }), jsx(ListItemText, { children: jsx(Typography, { children: "Fetch Astronomy Picture of the Day" }) })] }) }) })), preview && (jsxs(Card, { sx: { display: 'flex' }, children: [mediaUrl && (jsx(CardMedia, { component: "img", sx: { width: '40%' }, image: mediaUrl, alt: preview.title || 'Astronomy Picture of the Day' })), jsx(Box, { sx: { display: 'flex', flexDirection: 'column' }, children: jsxs(CardContent, { sx: { flex: '1 0 auto' }, children: [jsx(Typography, { component: "div", variant: "body1", marginBottom: 1, children: preview.title || 'Astronomy Picture of the Day' }), preview.date && (jsxs(Typography, { variant: "caption", color: "text.secondary", display: "block", gutterBottom: true, children: [preview.date, preview.copyright ? " \u00B7 \u00A9 ".concat(preview.copyright) : ''] })), preview.explanation && (jsx(Typography, { variant: "body2", color: "text.secondary", children: preview.explanation })), jsxs(Box, { sx: { mt: 1 }, children: [preview && !readonly && (jsx(Tooltip, { title: "Refresh Astronomy Picture of the Day", children: jsx(IconButton, { size: "small", onClick: fetchApod, disabled: Boolean(readonly) || loading || !instance, children: jsx(CachedOutlinedIcon, {}) }) })), preview.hdurl && (jsx(Tooltip, { title: "HD image", children: jsx(IconButton, { size: "small", onClick: function () {
+                                                    if (preview.hdurl) {
+                                                        window.open(preview.hdurl, '_blank');
+                                                    }
+                                                }, children: jsx(VisibilityOutlinedIcon, {}) }) })), preview && !readonly && (jsx(Tooltip, { title: "Clear", children: jsx(IconButton, { size: "small", onClick: clearValue, disabled: readonly, children: jsx(DeleteOutlineOutlinedIcon, {}) }) }))] })] }) })] }))] }));
 }
 
 /**
@@ -211,7 +214,7 @@ var plugin = {
                     return { url: text, title: text, date: '', explanation: '' };
                 }
             },
-            valueSerializer: function (_field, value) {
+            valueSerializer: function (value) {
                 var _a, _b, _c, _d, _e, _f, _g, _h;
                 var apod = value;
                 if (!apod || typeof apod !== 'object')

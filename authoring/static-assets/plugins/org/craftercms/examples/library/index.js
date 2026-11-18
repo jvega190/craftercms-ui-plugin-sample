@@ -8,6 +8,7 @@ const { useState, useEffect, useId, useMemo } = craftercms.libs.React;
 const { Box, Grid, Typography, List, ListItem, ListItemText } = craftercms.libs.MaterialUI;
 const { fetchAll } = craftercms.services.sites;
 const { LoadingState, SiteCard, PathSelector, PathNavigatorTree } = craftercms.components;
+const { contentTypesForParse } = craftercms.utils.contentType;
 
 var en = {
 	"org.craftercms.examples.sitesView.noContentTypesMessage": "There are no content types",
@@ -223,12 +224,17 @@ function useContentTypes() {
 	const dispatch = useDispatch();
 	const site = useActiveSiteId();
 	const { byId, isFetching } = useSelection((state) => state.contentTypes);
+	const uiConfigFetching = useSelection((state) => state.uiConfig?.isFetching);
+	const controls = useSelection((state) => state.uiConfig?.controls);
 	useEffect(() => {
 		if (!byId && site && isFetching === null) {
 			dispatch(fetchContentTypes());
 		}
 	}, [dispatch, site, byId, isFetching]);
-	return byId;
+	return useMemo(
+		() => contentTypesForParse(byId, { isFetching: uiConfigFetching, controls }),
+		[byId, uiConfigFetching, controls]
+	);
 }
 
 /*

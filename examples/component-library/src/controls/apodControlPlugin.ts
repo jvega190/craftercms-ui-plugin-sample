@@ -30,7 +30,7 @@ const plugin: PluginDescriptor = {
           return { url: text, title: text, date: '', explanation: '' };
         }
       },
-      valueSerializer: (_field, value) => {
+      valueSerializer: (value) => {
         const apod = value as ApodInfo | null | undefined;
         if (!apod || typeof apod !== 'object') return '';
         return JSON.stringify({

@@ -58,7 +58,13 @@ typeof SuppressedError === "function" ? SuppressedError : function (error, suppr
     return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
 };
 
-var APOD_ENDPOINT = 'https://api.nasa.gov/planetary/apod';
+/**
+ * APOD moved off api.nasa.gov/planetary/apod (offline 1 Dec 2026) onto the
+ * science.nasa.gov WordPress API. `date=YYYY-MM-DD` is ignored there; a single
+ * day is the YYMMDD path, and "today" is the first item of a one-item page.
+ * https://api.nasa.gov/
+ */
+var APOD_ENDPOINT = 'https://science.nasa.gov/wp-json/wp/v2/apod-basic';
 var DEFAULT_API_KEY = 'DEMO_KEY';
 function readApiKey(record) {
     var _a;
@@ -67,18 +73,67 @@ function readApiKey(record) {
         return DEFAULT_API_KEY;
     return String(raw).trim();
 }
-/** Fetches today's (or optional date) APOD entry from NASA Open APIs. */
+/** `2026-11-18` → `261118`, the path segment this API actually honors. */
+function toPathDate(date) {
+    var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date.trim());
+    if (!match) {
+        throw new Error("NASA APOD date must be YYYY-MM-DD (received \"".concat(date, "\")."));
+    }
+    return "".concat(match[1].slice(2)).concat(match[2]).concat(match[3]);
+}
+function stripHtml(value) {
+    if (!value)
+        return '';
+    return value
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/gi, ' ')
+        .replace(/&amp;/gi, '&')
+        .replace(/&lt;/gi, '<')
+        .replace(/&gt;/gi, '>')
+        .replace(/&quot;/gi, '"')
+        .replace(/&#0*39;|&apos;/gi, "'")
+        .replace(/&#(\d+);/g, function (_, code) { return String.fromCodePoint(Number(code)); })
+        .replace(/&#x([0-9a-f]+);/gi, function (_, code) { return String.fromCodePoint(parseInt(code, 16)); })
+        .replace(/\s+/g, ' ')
+        .trim()
+        .replace(/^Explanation:\s*/i, '');
+}
+/**
+ * The new payload's `url` is the article page. The picture is `hdurl`.
+ * Explanation and credit fields arrive as HTML.
+ */
+function toApodInfo(entry) {
+    var _a;
+    var imageUrl = entry.hdurl || '';
+    var copyright = stripHtml(entry.copyright || entry.credit);
+    return {
+        date: (_a = entry.date) !== null && _a !== void 0 ? _a : '',
+        title: stripHtml(entry.title),
+        explanation: stripHtml(entry.explanation),
+        url: imageUrl,
+        hdurl: entry.hdurl,
+        copyright: copyright || undefined,
+        thumbnail_url: entry.thumbnail_url,
+        service_version: entry.service_version
+    };
+}
+/** Fetches today's (or optional date) APOD entry from the WordPress APOD API. */
 function fetchApod(apiKey_1) {
     return __awaiter(this, arguments, void 0, function (apiKey, options) {
-        var params, response, body, data;
+        var params, url, response, body, data, entry, apod;
         if (options === void 0) { options = {}; }
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     params = new URLSearchParams({ api_key: apiKey });
-                    if (options.date)
-                        params.set('date', options.date);
-                    return [4 /*yield*/, fetch("".concat(APOD_ENDPOINT, "?").concat(params.toString()))];
+                    url = APOD_ENDPOINT;
+                    if (options.date) {
+                        url = "".concat(APOD_ENDPOINT, "/").concat(toPathDate(options.date));
+                    }
+                    else {
+                        params.set('per_page', '1');
+                    }
+                    return [4 /*yield*/, fetch("".concat(url, "?").concat(params.toString()))];
                 case 1:
                     response = _a.sent();
                     if (!!response.ok) return [3 /*break*/, 3];
@@ -89,15 +144,18 @@ function fetchApod(apiKey_1) {
                 case 3: return [4 /*yield*/, response.json()];
                 case 4:
                     data = _a.sent();
-                    if (Array.isArray(data)) {
-                        if (!data.length)
-                            throw new Error('NASA APOD returned an empty list.');
-                        return [2 /*return*/, data[0]];
+                    if (Array.isArray(data) && !data.length) {
+                        throw new Error('NASA APOD returned an empty list.');
                     }
-                    if (!data || typeof data !== 'object') {
+                    entry = Array.isArray(data) ? data[0] : data;
+                    if (!entry || typeof entry !== 'object') {
                         throw new Error('NASA APOD returned an unexpected payload.');
                     }
-                    return [2 /*return*/, data];
+                    apod = toApodInfo(entry);
+                    if (!apod.hdurl && !apod.url) {
+                        throw new Error('NASA APOD did not include an image URL.');
+                    }
+                    return [2 /*return*/, apod];
             }
         });
     });
